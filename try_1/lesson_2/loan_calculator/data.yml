@@ -1,0 +1,51 @@
+:name:
+  :amt: amount
+  :apr: APR
+  :length: length
+  :pmt: payment
+:options:
+  a: :amt
+  b: :apr
+  c: :length
+  d: :pmt
+:input_prompt:
+  :amt: 'Enter the loan amount to 2 decimal places (Ex: 200.50 for $200.50).'
+  :apr: 'Enter the annual percentage rate (Ex: 2.52 for 2.52%).'
+  :length: 'Enter the length of the loan in whole months (Integers only).'
+  :pmt: 'Enter the monthly payment amount to 2 decimal places (Ex: 20 for $20.00)'
+:valid:
+  :amt: !ruby/regexp /^\d*\.?\d{,2}$/
+  :apr: !ruby/regexp /^\d*\.?\d*$/
+  :length: !ruby/regexp /^\d+$/
+  :pmt: !ruby/regexp /^\d*\.?\d{,2}$/
+:convert:
+  :amt: to_f
+  :apr: to_f
+  :length: to_i
+  :pmt: to_f
+:message:
+  :amt: 'The amount of the loan has been calculated!'
+  :apr: 'The APR of the loan has been calculated!'
+  :length: 'The length of the loan has been calculated!'
+  :pmt: 'The monthly loan payment has been calculated!'
+  :title: 'Welcome to Loan Calculator'
+  :instructions: "Enter letters 'a'-'d' to input a loan term\nPrepend with 'c-' to calulate a loan term\nExample: enter 'c-d' to calculate payment\n\n"
+  :exit: "Thank you for using Loan Calculator"
+:error_msg:
+  :not_enough_data: 'Please enter more loan terms before calculating.'
+  :invalid_selection: "***** Invalid selection! *****\nPlease make a valid selection from the menu."
+  :invalid_data: '**** Invalid data entered!!! ****'
+  :recalc: "\n**Data is incongruous. Please recalculate a loan term**"
+  :apr_error: "***No APR solution available***\nPlease adjust parameters"
+:format:
+  :amt: '$%.2f'
+  :apr: '%.3f%'
+  :length: '%.2f months'
+  :pmt: '$%.2f'
+:box_output:
+  :title: 'Loan Terms'
+  :amt: 'a) Amount: '
+  :apr: 'b) APR: '
+  :length: 'c) Length: '
+  :pmt: 'd) Monthly Payment: '
+  :quit: "(Enter 'q' to quit)"
