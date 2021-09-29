@@ -1,0 +1,61 @@
+<h2 id="object-oriented-programming-with-ruby">Object Oriented Programming with Ruby</h2>
+<p>Author: Launch School Open Bookshelf</p>
+<h3 id="the-object-model">The Object Model</h3>
+<h4 id="definitions">Definitions</h4>
+<p><strong>Encapsulation</strong> Hiding the state of an object to prevent unintentional access Example: private object methods can only be access from by the object itself</p>
+<p><strong>Polymorphism</strong> The ability for different data types to respond to a common interface (method invocation). Example: Using a Speak module, both Cat and Dog objects could be made to respond to a <code>speak</code> method invocation</p>
+<p><strong>Inheritance</strong> <em>Subclasses</em> can inherit behaviors of a <em>superclass</em></p>
+<p><strong>Mixin</strong> including a module in a class to make its behaviors available to the class's objects</p>
+<p><strong>Module</strong> A special version of a class that only shares behaviors, but not state. An object cannot be created from a Module A collection of behaviors usable in other classes via mixins Also used as a namespace</p>
+<p><strong>Instantiation</strong> The process of creating a new object or instance from a class We instantiate an object named <code>sparky</code> from the <code>GoodDog</code> class The <code>new</code> method is called on a class to instantiate a new object of that class</p>
+<h4 id="what-are-objects">What are objects?</h4>
+<p>In Ruby, methods, blocks, and variables are among the few things that are not objects. If classes are molds, objects are what are produced from those molds.</p>
+<h4 id="modules">Modules</h4>
+<p>A module is a collection of behaviors, whereas a class also stores state. Modules are made available to a class by using the <code>include</code> method invocation including a module is like copy-pasting its methods into a class</p>
+<pre><code>module Speak
+  def speak
+    puts &#39;hello&#39;
+  end
+end
+
+class Human
+  include Speak
+end
+
+class Dog
+  include Speak
+end
+
+Human.new.speak # =&gt; &#39;hello&#39;
+Dog.new.speak   # =&gt; &#39;hello&#39;
+</code></pre>
+<h4 id="method-lookup">Method Lookup</h4>
+<p><code>ancestors</code> can be used to find a method's lookup chain</p>
+<hr />
+<h3 id="classes-and-objects---part-1">Classes and Objects - Part 1</h3>
+<p><strong>States</strong> track attributes for individual objects Instance variables are scoped at the object level and keep track of state Instance variables exist as long as the object instance exists Instance variables tie data to objects Every object's state is unique instance variables are prefixed with the <code>@</code> symbol (ex: <code>@name</code>, <code>@date</code>)</p>
+<p><strong>Behaviors</strong> are what objects are capable of doing Instance methods provide an object's behaviors. Instance methods are defined in a class and available to objects (instances) of that class. All objects of the same class have the same behaviors, though they contain different states</p>
+<p><strong>constructor</strong> is a subroutine called to create an object. The <code>initialize</code> method is the ruby constructor The <code>initialize</code> method is called each time a new object is created.</p>
+<p><strong>Accessor methods</strong> are ruby idioms that shortcut manually writing getter and setter instance methods Setter methods always return the value that is passed in as an argument. Explicit return values are ignored for setter methods Accessor methods take symbols as arguments (ex: <code>attr_reader :name, :date, :balance</code>)</p>
+<p>It is preferrable to call a getter method (if defined) rather than referencing the instance variable directly It is easier to mask data in the getter method, than to format the return value of the getter method where it is called</p>
+<p>Explicit <code>self</code> must be used to access setter methods within a class definition. <code>self.name = 'bob'</code> rather than <code>name = 'bob'</code> Without explicit <code>self</code>, ruby interprets <code>name = 'bob'</code> as creating a new local variable <code>name</code></p>
+<hr />
+<h3 id="classes-and-objects---part-2">Classes and Objects - Part 2</h3>
+<p><strong>Class methods</strong> are methods we can call directly on the class without creating an object Class methods are prepended with the <code>self</code> keyword Class methods are where we put general functionality that doesn't deal with individual object's state</p>
+<p><strong>Class variables</strong> are variables used to track a class-level detail the does not pertain to individual objects Created using two @@ symbols Can be accessed from within an instance method</p>
+<p><strong>Constants</strong> can be created in class definitions for data that does not change between objects</p>
+<h4 id="the-to_s-method">The to_s method</h4>
+<p>The <code>to_s</code> method is build into every class in Ruby <code>puts</code> method calls <code>to_s</code> for any argument that is not an array <code>to_s</code> is called automatically during string interpolation</p>
+<p>The <code>p</code> method is different, as it calls the <code>inspect</code> method on the object <code>p sparky</code> is equivalent to <code>puts sparky.inspect</code></p>
+<p><code>to_s</code> can be overridden to customize string output for objects <code>inspect</code> should not be overridden, as it is used for debugging</p>
+<h4 id="self"><code>self</code></h4>
+<p>Changes based on the scope it is used in Is a way of being explicit about what code is referencing and what our intentions are as far as behavior.</p>
+<ol>
+<li>inside of an instance method, <code>self</code> references the instance (object) that called the method - the <em>calling object</em></li>
+<li>outside an instance method, <code>self</code> references the class, and is used to define class methods</li>
+</ol>
+<p>For the following class and object: <code>sparky = GoodDog.new</code>,</p>
+<ol>
+<li>Calling <code>self.name</code> inside in instance method is the same as calling <code>sparky.name</code> on the object</li>
+<li>Calling <code>self.name</code> outside an instance method is the same as calling <code>GoodDog.name</code> on the class</li>
+</ol>

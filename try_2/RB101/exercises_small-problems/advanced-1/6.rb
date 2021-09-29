@@ -20,7 +20,7 @@ p my_method([5, 6, 7]) # [25, 36, 49]
 def test(n)
   if n.positive?
     'positive'
-  elsif # looks to next line. uses 'zero' as conditional, which is 'true'
+  elsif # looks to next line. uses the 'zero' string as conditional, which is 'true'
         # however, there is no code to execute between 'zero' and the else
         # statement, so the if/elsif/else shortcircuits to always return nil
         # unless n is positive
