@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-# Colorful Cat
+# Counting Cats
 class Cat
-  COLOR = 'purple'
+  @@total_cats = 0
 
-  attr_reader :name
-
-  def initialize(name)
-    @name = name
+  def initialize
+    @@total_cats += 1
   end
 
-  def greet
-    puts "Hello! My name is #{name} and I'm a #{COLOR} cat!"
+  def self.total
+    @@total_cats
   end
 end
 
-kitty = Cat.new('Sophie')
-kitty.greet
+kitty1 = Cat.new
+kitty2 = Cat.new
+puts Cat.total
+

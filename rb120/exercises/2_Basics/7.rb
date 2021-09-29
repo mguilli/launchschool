@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
-# Public Secret
-class Person
-  attr_accessor :secret
+# Identify yourself - 2
+class Cat
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+  end
+
+  def to_s
+    "I'm #{name}!"
+  end
 end
 
-person1 = Person.new
-person1.secret = 'Shh.. this is a secret!'
-puts person1.secret
+kitty = Cat.new('Sophie')
+puts kitty
