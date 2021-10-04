@@ -248,6 +248,7 @@ Methods are public by default
 
 Public methods comprise and object's interface
 Private methods are only available from other methods in the class
+Private methods can not be accessed by instances of the class, only the class itself
 Protected methods behave like public methods from inside the class
 Protected methods behave like private methods from outside the class
 Protected methods can be called by other instances of the same class
