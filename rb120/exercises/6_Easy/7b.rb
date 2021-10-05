@@ -14,8 +14,7 @@ class Pet
   end
 end
 
-# Has a name
-# Keeps track of the pets adoped
+# Tracks pets adopted by an owner
 class Owner
   attr_reader :name
 
@@ -41,33 +40,64 @@ end
 
 # Coordinates the adoption of pets by owners
 # Keeps track of which owner adopts which pet
+# Maintains a list of unadopted pets
 class Shelter
   def initialize
     @adoptions = []
+    @unadopted = []
   end
 
   def adopt(owner, pet)
+    @unadopted.delete(pet)
+
     owner.adopt(pet)
     @adoptions.include?(owner) || @adoptions << owner
   end
 
+  def intake(pet)
+    @unadopted << pet
+  end
+
+  def number_unadopted
+    @unadopted.size
+  end
+
   def print_adoptions
+    puts "The Animal Shelter has the following unadopted pets:"
+    puts @unadopted
+    puts ''
+
     @adoptions.each(&:print_pets)
   end
 end
 
-butterscotch = Pet.new('cat', 'Butterscotch')
-pudding      = Pet.new('cat', 'Pudding')
-darwin       = Pet.new('bearded dragon', 'Darwin')
-kennedy      = Pet.new('dog', 'Kennedy')
-sweetie      = Pet.new('parakeet', 'Sweetie Pie')
-molly        = Pet.new('dog', 'Molly')
-chester      = Pet.new('fish', 'Chester')
+all_pets = [
+  butterscotch = Pet.new('cat',            'Butterscotch'),
+  pudding      = Pet.new('cat',            'Pudding'),
+  darwin       = Pet.new('bearded dragon', 'Darwin'),
+  kennedy      = Pet.new('dog',            'Kennedy'),
+  sweetie      = Pet.new('parakeet',       'Sweetie Pie'),
+  molly        = Pet.new('dog',            'Molly'),
+  chester      = Pet.new('fish',           'Chester'),
+  # not adopted 
+  Pet.new('dog',      'Asta'),
+  Pet.new('dog',      'Laddie'),
+  Pet.new('cat',      'Fluffy'),
+  Pet.new('cat',      'Kat'),
+  Pet.new('cat',      'Ben'),
+  Pet.new('parakeet', 'Chatterbox'),
+  Pet.new('parakeet', 'Bluebell'),
+]
 
 phanson = Owner.new('P Hanson')
 bholmes = Owner.new('B Holmes')
 
 shelter = Shelter.new
+
+all_pets.each do |pet|
+  shelter.intake(pet)
+end
+
 shelter.adopt(phanson, butterscotch)
 shelter.adopt(phanson, pudding)
 shelter.adopt(phanson, darwin)
@@ -78,6 +108,7 @@ shelter.adopt(bholmes, chester)
 shelter.print_adoptions
 puts "#{phanson.name} has #{phanson.number_of_pets} adopted pets."
 puts "#{bholmes.name} has #{bholmes.number_of_pets} adopted pets."
+puts "The Animal shelter has #{shelter.number_unadopted} unadopted pets."
 
 # P Hanson has adopted the following pets:
 # a cat named Butterscotch
