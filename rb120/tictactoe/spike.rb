@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Accessible
+  SPACE_NAMES = (1..9)
   ROWS = %i(top middle bottom)
   COLUMNS = %i(left center right)
 
@@ -30,21 +31,17 @@ class Cell
     " #{marker || ' '} "
   end
 
-  def right?
-    column == :right
-  end
-
-  def bottom?
-    row == :bottom
-  end
-
   def add_mark(mark)
     @marker = mark
+  end
+
+  def last_row?
+    row == ROWS.last
   end
 end
 
 class Board
-  SPACE_NAMES = (1..9)
+  include Accessible
   # Diagonals: row == column || (row + column) == 2
 
   attr_reader :cells
@@ -54,13 +51,14 @@ class Board
   end
 
   def rows
-    cells.each_slice(3).to_a
+    # cells.each_slice(3).to_a
+    ROWS.map { |name| cells.select { |cell| cell.row == name } }
   end
 
   def display
     rows.each do |row|
       puts row.join('|')
-      break if row.first.bottom?
+      break if row.first.last_row?
       puts '---+---+---'
     end
   end
