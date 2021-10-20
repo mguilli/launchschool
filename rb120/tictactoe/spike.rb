@@ -1,34 +1,35 @@
 # frozen_string_literal: true
 
 module Accessible
-  SPACE_NAMES = (1..9)
-  ROWS = %i(top middle bottom)
-  COLUMNS = %i(left center right)
+  WIDTH = 3
+  SPACE_NAMES = [*1..(WIDTH**2)]
+  ROWS = [*0...WIDTH]
+  COLUMNS = [*0...WIDTH]
+  DIAGONALS = [*0...(WIDTH - 1)]
 
-  def index(space_number)
-    space_number -= 1
-    space_number.divmod(3)
+  def index(space_name)
+    idx = SPACE_NAMES.index(space_name)
+    idx.divmod(WIDTH)
   end
 
-  def row_column(space_number)
-    row, column = index(space_number)
-    [ROWS[row], COLUMNS[column]]
-  end
+  # def row_column(space_name)
+  #   row, column = index(space_name)
+  #   [ROWS[row], COLUMNS[column]]
+  # end
 end
 
 class Cell
   include Accessible
 
-  attr_reader :row, :column, :number, :marker
+  attr_reader :row, :column, :space_name, :marker
 
-  def initialize(space_number)
-    @number = space_number
-    @row, @column = row_column(space_number)
-    @marker = false
+  def initialize(space_name)
+    @space_name = space_name
+    @row, @column = index(space_name)
   end
 
   def to_s
-    " #{marker || ' '} "
+    " #{marker || space_name} "
   end
 
   def add_mark(mark)
@@ -51,25 +52,33 @@ class Board
   end
 
   def rows
-    # cells.each_slice(3).to_a
     ROWS.map { |name| cells.select { |cell| cell.row == name } }
+  end
+
+  def columns
+    rows.transpose
+  end
+
+  def diagonals
+    first = cells.select { |cell| cell.row == cell.column }
+    second = cells.select { |cell| (cell.row + cell.column) == (WIDTH - 1) }
+    [first, second]
   end
 
   def display
     rows.each do |row|
       puts row.join('|')
-      break if row.first.last_row?
+      break if row.last.last_row?
       puts '---+---+---'
     end
   end
 
-  def mark(number, marker)
-    cell = find_by_number(number)
-    cell.add_mark(marker)
+  def mark(space_name, marker)
+    space(space_name).add_mark(marker)
   end
 
-  def find_by_number(number)
-    cells.find { |cell| cell.number == number }
+  def space(space_name)
+    cells.find { |cell| cell.space_name == space_name }
   end
 end
 
@@ -80,12 +89,6 @@ class Game
 
   def play
     board.display
-    board.mark(5, 'x')
-    board.display
-    board.mark(9, 'o')
-    board.display
-    board.mark(4, 'x')
-    board.display
   end
 
   private
@@ -94,3 +97,8 @@ class Game
 end
 
 Game.new.play
+board = Board.new
+p(board.rows.map { |row| row.map(&:space_name) })
+p(board.columns.map { |row| row.map(&:space_name) })
+p(board.diagonals.map { |row| row.map(&:space_name) })
+p board.rows
