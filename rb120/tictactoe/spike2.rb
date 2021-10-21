@@ -52,11 +52,34 @@ class Cell
   end
 end
 
+class Line
+  def initialize(cell_array)
+    @cells = cell_array
+  end
+
+  def winning_line?
+    @cells.all?(&:marked?) && @cells.group_by(&:marker).size == 1
+  end
+end
+
+class Group
+  def initialize(line_array)
+    @lines = line_array.map { |line| Line.new(line) }
+  end
+
+  def winning_line?
+    @lines.any?(&:winning_line?)
+  end
+end
+
 class Board
   include Accessible
 
   def initialize
     @cells = SPACE_NAMES.map { |cell| Cell.new(cell) }
+    @rows = Group.new(partition_rows)
+    @columns = Group.new(partition_columns)
+    @diagonals = Group.new(partition_diagonals)
   end
 
   def display
@@ -78,9 +101,10 @@ class Board
   end
 
   def winner?
-    [rows, columns, diagonals].any? do |group|
-      group.any? { |line| winning_line?(line) }
-    end
+    # [rows, columns, diagonals].any? do |group|
+    #   group.any? { |line| winning_line?(line) }
+    # end
+    [rows, columns, diagonals].any?(&:winning_line?)
   end
 
   def winner
@@ -93,21 +117,17 @@ class Board
 
   private
 
-  attr_reader :cells
+  attr_reader :cells, :rows, :columns, :diagonals
 
-  def winning_line?(line)
-    line.all?(&:marked?) && line.group_by(&:marker).size == 1
-  end
-
-  def rows
+  def partition_rows
     cells.group_by(&:row).values
   end
 
-  def columns
+  def partition_columns
     cells.group_by(&:column).values
   end
 
-  def diagonals
+  def partition_diagonals
     left = cells.group_by(&:left_diagonal?)[true]
     right = cells.group_by(&:right_diagonal?)[true]
     [left, right]
@@ -146,7 +166,7 @@ board = Board.new
 puts board.winner? == false
 [1,2,4].each { |space| board.mark(space, :x) }
 board.mark(3, :x)
-board.display
+# board.display
 puts board.winner? == true
 p board.winner
 p board.send(:cells).group_by(&:marked?)
