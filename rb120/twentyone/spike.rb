@@ -65,8 +65,6 @@ end
 class Participant
   BUST = 21
 
-  include Comparable
-
   attr_reader :name
 
   def initialize

@@ -6,21 +6,13 @@ module Config
   MENU_WIDTH = 28
   BOARD_WIDTH = 3
   SPACE_NAMES = [*1..(BOARD_WIDTH**2)]
-  # ROWS = [*0...BOARD_WIDTH]
-  # COLUMNS = [*0...BOARD_WIDTH]
 
-  # TODO: Refactor if not used
-  def index(space_name)
-    idx = SPACE_NAMES.index(space_name)
-    idx.divmod(BOARD_WIDTH)
-  end
-
-  def center(message, delimiter = ' ')
+  def center_string(message, delimiter = ' ')
     message.center(MENU_WIDTH, delimiter)
   end
 
   def row_separator
-    "\n#{center((['---'] * BOARD_WIDTH).join('+'))}\n"
+    "\n#{center_string((['---'] * BOARD_WIDTH).join('+'))}\n"
   end
 end
 
@@ -31,20 +23,16 @@ class Cell
 
   def initialize(space_name)
     @space_name = space_name
-    @row, @column = index(space_name)
+    @row, @column = SPACE_NAMES.index(space_name).divmod(BOARD_WIDTH)
     @marker = false
   end
 
   def to_s
-    "#{marker || space_name}"
+    (marker || space_name).to_s
   end
 
   def add_mark(mark)
     @marker = mark
-  end
-
-  def last_row?
-    row == BOARD_WIDTH - 1
   end
 
   def marked?
@@ -71,16 +59,12 @@ class Line
     @cells.all?(&:marked?) && @cells.group_by(&:marker).size == 1
   end
 
-  def last_row?
-    @cells.all?(&:last_row?)
-  end
-
-  def marker
+  def winning_marker
     @cells.first.marker if winning_line?
   end
 
   def to_s
-    center(" #{@cells.join(' | ')} ")
+    center_string(" #{@cells.join(' | ')} ")
   end
 end
 
@@ -89,19 +73,19 @@ class Board
 
   def initialize
     @cells = SPACE_NAMES.map { |cell| Cell.new(cell) }
-    @rows = partition_rows.map { |line| Line.new(line) }
-    @columns = partition_columns.map { |line| Line.new(line) }
-    @diagonals = partition_diagonals.map { |line| Line.new(line) }
+    @rows, @columns, @diagonals = partition_cells
   end
 
   def display
     system 'clear'
-    puts center(' Welcome to TicTacToe ', '=')
+    puts center_string(' Welcome to TicTacToe ', '=')
+    puts ''
     puts rows.join(row_separator)
+    puts ''
     puts '-' * MENU_WIDTH
   end
 
-  def mark(space_name, marker)
+  def []=(space_name, marker)
     space(space_name).add_mark(marker)
   end
 
@@ -110,62 +94,67 @@ class Board
   end
 
   def winner
-    vectors.find(&:winning_line?).marker
+    vectors.find(&:winning_line?).winning_marker
   end
 
   private
 
   attr_reader :cells, :rows, :columns, :diagonals
 
+  def space(space_name)
+    cells.find { |cell| cell.space_name == space_name }
+  end
+
   def vectors
     rows + columns + diagonals
   end
 
-  def partition_rows
-    cells.group_by(&:row).values
+  def partition_cells
+    rows = cells.group_by(&:row).values
+    cols = cells.group_by(&:column).values
+    diag = %i(left_diagonal? right_diagonal?).map do |diagonal|
+      cells.group_by(&diagonal)[true]
+    end
+    [rows, cols, diag].map { |group| group.map { |line| Line.new(line) } }
   end
+end
 
-  def partition_columns
-    cells.group_by(&:column).values
-  end
+class Player
+end
 
-  def partition_diagonals
-    left = cells.group_by(&:left_diagonal?)[true]
-    right = cells.group_by(&:right_diagonal?)[true]
-    [left, right]
-  end
+class Computer < Player
+end
 
-  def space(space_name)
-    cells.find { |cell| cell.space_name == space_name }
-  end
+class Human < Player
 end
 
 class Game
   def initialize
     @board = Board.new
+    @human = Human.new
+    @computer = Computer.new
   end
 
   def play
     board.display
-    until winner?
-      player.turn
+    until board.winner?
+      human.turn
       computer.turn
     end
-    puts winner
+    puts board.winner
   end
 
   private
 
-  attr_reader :board
+  attr_reader :board, :human, :computer
 end
 
-# Game.new.play
-board = Board.new
-puts board.winner? == false
-[1,2,4].each { |space| board.mark(space, :x) }
-board.mark(3, :x)
-board.display
-puts board.winner? == true
-p board.winner
-# p board.send(:cells).group_by(&:marked?)
+Game.new.play
+# board = Board.new
+# puts board.winner? == false
+# [1,2,4].each { |space| board[space] = :x}
+# board[3] = :x
+# board.display
+# puts board.winner? == true
+# p board.winner
 
